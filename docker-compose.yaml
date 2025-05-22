@@ -1,0 +1,51 @@
+services:
+ hmaster1:
+  build: 
+   context: .
+  hostname: hmaster1
+  container_name: hmaster1
+  ports:
+   - "9878:9870"
+   - "8082:8088"
+  networks:
+    - mynetwork
+  restart: always
+  volumes:
+  - ./configurations:/configurations
+  - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+
+ 
+ hmaster2:
+  build: 
+   context: .
+  hostname: hmaster2
+  container_name: hmaster2
+  ports:
+   - "9874:9870"
+   - "8084:8088"
+  networks:
+    - mynetwork   
+ 
+ 
+ hmaster3:
+  build: 
+   context: .
+  hostname: hmaster3
+  container_name: hmaster3
+  ports:
+   - "9873:9870"
+   - "8085:8088"
+  networks:
+    - mynetwork
+
+ hworker:
+  build: 
+   context: .
+  hostname: hworker
+  container_name: hworker
+  networks:
+    - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

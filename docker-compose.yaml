@@ -1,7 +1,6 @@
 services:
  hmaster1:
-  build: 
-   context: .
+  image: hadoop-base:latest
   hostname: hmaster1
   container_name: hmaster1
   ports:
@@ -12,7 +11,7 @@ services:
   restart: always
   volumes:
     - ./configurations:/configurations
-    - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - ./configurations/entrypoint.sh:/usr/local/bin/entrypoint.sh
     - namenode_data1:/usr/local/hadoop/hdfs/namenode
     - journalnode1:/usr/local/hadoop/journal
     - zookeeper1:/usr/local/zookeeper/
@@ -36,7 +35,7 @@ services:
   restart: always
   volumes:
     - ./configurations:/configurations
-    - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - ./configurations/entrypoint.sh:/usr/local/bin/entrypoint.sh
     - namenode_data2:/usr/local/hadoop/hdfs/namenode
     - journalnode2:/usr/local/hadoop/journal
     - zookeeper2:/usr/local/zookeeper/
@@ -60,7 +59,7 @@ services:
   restart: always
   volumes:
     - ./configurations:/configurations
-    - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - ./configurations/entrypoint.sh:/usr/local/bin/entrypoint.sh
     - namenode_data3:/usr/local/hadoop/hdfs/namenode
     - journalnode3:/usr/local/hadoop/journal
     - zookeeper3:/usr/local/zookeeper/
@@ -80,7 +79,7 @@ services:
   restart: always
   volumes:
     - ./configurations:/configurations
-    - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - ./configurations/entrypoint.sh:/usr/local/bin/entrypoint.sh
     - datanode_data:/usr/local/hadoop/hdfs/datanode
   healthcheck:
     test: ["CMD-SHELL", "jps | grep -E 'DataNode|NodeManager'"]      
@@ -89,12 +88,12 @@ services:
     retries: 10
     
   depends_on:
-    hmaster1":
-        condition: service_healthy
+    hmaster1:
+      condition: service_healthy
     hmaster2:
-        condition: service_healthy
+      condition: service_healthy
     hmaster3:
-        condition: service_healthy
+      condition: service_healthy
   
   
  hbmaster1:
@@ -106,10 +105,9 @@ services:
    - "16010:16010"
   networks:
     - mynetwork
-  
   depends_on:
-   hworker:
-    condition: service_healthy
+    hworker:
+      condition: service_healthy
 
  hbmaster2:
   image: hadoop-base:latest

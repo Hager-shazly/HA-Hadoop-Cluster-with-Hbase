@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <!-- ====== Core MapReduce Configuration ====== -->
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+    <description>Use YARN as the resource management framework</description>
+  </property>
+
+  
+  <property>
+    <name>mapreduce.map.output.compress</name>
+    <value>true</value>
+    <description>Compress map outputs</description>
+  </property>
+
+  <property>
+    <name>mapreduce.map.output.compress.codec</name>
+    <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+    <description>Compression codec for maps</description>
+  </property>
+
+  <!-- ====== High Availability ====== -->
+  <property>
+    <name>yarn.resourcemanager.ha.enabled</name>
+    <value>true</value>
+    <description>Enable YARN HA</description>
+  </property>
+
+  <property>
+    <name>yarn.resourcemanager.ha.rm-ids</name>
+    <value>rm1,rm2,rm3</value>
+    <description>ResourceManager IDs</description>
+  </property>
+
+  <property>
+    <name>yarn.resourcemanager.cluster-id</name>
+    <value>yarn-cluster</value>
+    <description>Cluster identifier</description>
+  </property>
+
+  <!-- ====== Fault Tolerance ====== -->
+  <property>
+    <name>yarn.resourcemanager.am.max-attempts</name>
+    <value>4</value>
+    <description>Max application attempts</description>
+  </property>
+
+  <property>
+    <name>mapreduce.task.timeout</name>
+    <value>600000</value>
+    <description>Task timeout in milliseconds (10 mins)</description>
+  </property>
+
+  <!-- ====== Web UI Configuration ====== -->
+  <property>
+    <name>yarn.resourcemanager.webapp.address.rm1</name>
+    <value>hmaster1:8088</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.webapp.address.rm2</name>
+    <value>hmaster2:8088</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.webapp.address.rm3</name>
+    <value>hmaster3:8088</value>
+  </property>
+
+<property>
+    <name>yarn.app.mapreduce.am.env</name>
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+</property>
+<property>
+    <name>mapreduce.map.env</name>
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+</property>
+<property>
+    <name>mapreduce.reduce.env</name>
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+</property>
+
+</configuration>

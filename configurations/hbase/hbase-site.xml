@@ -1,0 +1,64 @@
+<configuration>
+  <!-- hbase.cluster.distributed -->
+  <property>
+    <name>hbase.cluster.distributed</name>
+    <value>true</value>
+  </property>
+
+<!-- HBase root directory on HDFS -->
+  <property>
+    <name>hbase.rootdir</name>
+    <value>hdfs://mycluster/hbase</value>
+  </property>
+
+  <!-- Use Hadoop's HA-enabled filesystem -->
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://mycluster</value>
+  </property>
+
+  <!-- Zookeeper quorum for HBase coordination -->
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>hmaster1,hmaster2,hmaster3</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.property.clientPort</name>
+    <value>2181</value>
+  </property>
+  
+  <property>
+    <name>hbase.wal.provider</name>
+    <value>filesystem</value>
+  </property>
+
+  <property>
+    <name>hbase.replication</name>
+    <value>true</value>
+  </property>
+
+  <!-- Enable HBase Master HA -->
+  <property>
+    <name>hbase.master.ha.enabled</name>
+    <value>true</value>
+  </property>
+
+  <!-- Number of Master servers in HA setup -->
+  <property>
+    <name>hbase.master.wait.on.regionservers.mintostart</name>
+    <value>1</value>
+  </property>
+
+ <property>
+  <name>hbase.master.wait.on.regionservers.timeout</name>
+  <value>60000</value> <!-- 1 minute (60,000 ms) -->
+ </property>
+
+ <property>
+  <name>hbase.master.wait.on.regionservers.required</name>
+  <value>true</value>
+ </property>
+
+
+</configuration>

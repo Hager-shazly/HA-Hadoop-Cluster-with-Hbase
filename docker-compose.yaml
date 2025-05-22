@@ -11,25 +11,45 @@ services:
     - mynetwork
   restart: always
   volumes:
-  - ./configurations:/configurations
-  - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - ./configurations:/configurations
+    - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - namenode_data1:/usr/local/hadoop/hdfs/namenode
+    - journalnode1:/usr/local/hadoop/journal
+    - zookeeper1:/usr/local/zookeeper/
+  healthcheck:
+   test: ["CMD-SHELL", "hdfs haadmin -checkHealth nn1"]
+   interval: 15s
+   timeout: 10s
+   retries: 12
+   start_period: 50s
 
  
  hmaster2:
-  build: 
-   context: .
+  image: hadoop-base:latest
   hostname: hmaster2
   container_name: hmaster2
   ports:
    - "9874:9870"
    - "8084:8088"
   networks:
-    - mynetwork   
+    - mynetwork
+  restart: always
+  volumes:
+    - ./configurations:/configurations
+    - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - namenode_data2:/usr/local/hadoop/hdfs/namenode
+    - journalnode2:/usr/local/hadoop/journal
+    - zookeeper2:/usr/local/zookeeper/
+  healthcheck:
+    test: ["CMD-SHELL", "jps | grep -E 'QuorumPeerMain|NameNode|DFSZKFailoverController|ResourceManager|JournalNode'"]      
+    interval: 30s
+    timeout: 10s
+    retries: 10
+    start_period: 30s 
  
  
  hmaster3:
-  build: 
-   context: .
+  image: hadoop-base:latest
   hostname: hmaster3
   container_name: hmaster3
   ports:
@@ -37,15 +57,121 @@ services:
    - "8085:8088"
   networks:
     - mynetwork
+  restart: always
+  volumes:
+    - ./configurations:/configurations
+    - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - namenode_data3:/usr/local/hadoop/hdfs/namenode
+    - journalnode3:/usr/local/hadoop/journal
+    - zookeeper3:/usr/local/zookeeper/
+  healthcheck:
+    test: ["CMD-SHELL", "jps | grep -E 'QuorumPeerMain|NameNode|DFSZKFailoverController|ResourceManager|JournalNode'"]      
+    interval: 30s
+    timeout: 10s
+    retries: 10
+    start_period: 30s
 
  hworker:
-  build: 
-   context: .
+  image: hadoop-base:latest
   hostname: hworker
   container_name: hworker
   networks:
     - mynetwork
+  restart: always
+  volumes:
+    - ./configurations:/configurations
+    - ./configurations/start.sh:/usr/local/bin/entrypoint.sh
+    - datanode_data:/usr/local/hadoop/hdfs/datanode
+  healthcheck:
+    test: ["CMD-SHELL", "jps | grep -E 'DataNode|NodeManager'"]      
+    interval: 30s
+    timeout: 10s
+    retries: 10
+    
+  depends_on:
+    hmaster1":
+        condition: service_healthy
+    hmaster2:
+        condition: service_healthy
+    hmaster3:
+        condition: service_healthy
+  
+  
+ hbmaster1:
+  image: hadoop-base:latest
+  hostname: hbmaster1
+  container_name: hbmaster1
+  ports:
+   - "16000:16000"
+   - "16010:16010"
+  networks:
+    - mynetwork
+  
+  depends_on:
+   hworker:
+    condition: service_healthy
 
+ hbmaster2:
+  image: hadoop-base:latest
+  hostname: hbmaster2
+  container_name: hbmaster2
+  ports:
+   - "16001:16000"
+   - "16011:16010"
+  networks:
+    - mynetwork
+  
+  depends_on:
+   hworker:
+    condition: service_healthy
+
+ regionserver1:
+  image: hadoop-base:latest
+  hostname: regionserver1
+  container_name: regionserver1
+  ports:
+   - "16020:16020"
+   - "16030:16030"
+  networks:
+    - mynetwork
+  
+  depends_on:
+    hbmaster1:
+      condition: service_started
+    hbmaster2:
+      condition: service_started
+
+
+ regionserver2:
+  image: hadoop-base:latest
+  hostname: regionserver2
+  container_name: regionserver2
+  ports:
+   - "16021:16020"
+   - "16031:16030"
+  networks:
+    - mynetwork
+  
+  depends_on:
+    hbmaster1:
+      condition: service_started
+    hbmaster2:
+      condition: service_started
+
+
+volumes:
+  namenode_data1:
+  namenode_data2:
+  namenode_data3:
+  datanode_data:
+  journalnode1:
+  journalnode2:
+  journalnode3:
+  zookeeper1:
+  zookeeper2:
+  zookeeper3:
+
+  
 networks:
   mynetwork:
     driver: bridge
